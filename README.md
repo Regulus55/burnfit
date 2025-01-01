@@ -16,6 +16,8 @@
 
 ![level2](https://github.com/user-attachments/assets/796a9e56-fda9-4b5a-a3f9-e8741b2063aa)
 
+<br/>
+
 - Level 3 : react-native-reanimated, react-native-gesture-handler 라이브러리를 이용해서 제스처 이벤트가 발생하면
             아래와 같이 캘린더의 형태가 월 캘린더에서 주 캘린더로, 주 캘린더에서 다시 월 캘린더로 변환 가능하도록 구현 하시오
   - [x] react-native-reanimated, react-native-gesture-handler 라이브러리를 설치

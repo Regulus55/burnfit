@@ -19,6 +19,7 @@ import {
   isToday,
 } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import {COLORS} from "../../constants";
 
 const CalendarScreen = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -170,7 +171,7 @@ const CalendarScreen = () => {
         style={styles.floatingButton}
         onPress={handleAddButtonPress}
       >
-        <MaterialIcons name="add" size={30} color="white" />
+        <MaterialIcons name="add" size={30} color={COLORS.WHITE}/>
       </TouchableOpacity>
     </>
   );
@@ -208,15 +209,14 @@ const styles = StyleSheet.create({
     width: 40,
   },
   sundayText: {
-    color: "red", // Sunday: Red
+    color: COLORS.RED, // Sunday: Red
   },
   saturdayText: {
-    color: "blue", // Saturday: Blue
+    color: COLORS.BLUE, // Saturday: Blue
   },
   dateContainer: {
     alignItems: "center",
     justifyContent: "center",
-    // width: 48,
     flex: 1,
     height: 48,
     margin: 2,
@@ -227,11 +227,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   selectedDate: {
-    borderColor: "#2196F3",
+    borderColor: COLORS.BLUE_SKY,
     borderWidth: 3,
   },
   todayDate: {
-    borderColor: "#2196F3",
+    borderColor: COLORS.BLUE_SKY,
     borderWidth: 3,
   },
   outsideDate: {
@@ -242,9 +242,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     borderRadius: 10,
-    backgroundColor: "#ececec",
-    // borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
+    backgroundColor: COLORS.GRAY_LIGHT,
+    borderBottomColor: COLORS.WHITE,
     marginHorizontal: 25,
     marginVertical: 15,
     padding: 7,

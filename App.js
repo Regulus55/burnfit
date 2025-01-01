@@ -1,14 +1,30 @@
-import React from 'react';
-import {Text, View} from "react-native";
+
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {NavigationContainer} from "@react-navigation/native";
 import {TabNavigator} from "./src/navigation";
+import "react-native-gesture-handler";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet } from 'react-native';
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const App = () => {
     return (
-      <NavigationContainer>
-          <TabNavigator />
-      </NavigationContainer>
+        <GestureHandlerRootView style={styles.container}>
+            <SafeAreaProvider>
+                <NavigationContainer>
+                    <TabNavigator />
+                </NavigationContainer>
+                <StatusBar />
+            </SafeAreaProvider>
+        </GestureHandlerRootView>
+
     );
 };
 
 export default App;
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+});

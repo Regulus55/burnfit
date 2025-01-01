@@ -14,7 +14,7 @@
   - [x] 기능 2 : 상단 좌우 화살표 버튼 클릭 시 전월, 익월을 캘린더에 출력
   - [x] 기능 3 : 캘린더 상에 특정 날짜를 선택하면 해당 날짜에 원을 표시 (마지막으로 선택된 날짜만 표시됨)
 
-![level2](https://github.com/user-attachments/assets/796a9e56-fda9-4b5a-a3f9-e8741b2063aa)
+  ![level2](https://github.com/user-attachments/assets/796a9e56-fda9-4b5a-a3f9-e8741b2063aa)
 
 <br/>
 
@@ -23,4 +23,4 @@
   - [x] react-native-reanimated, react-native-gesture-handler 라이브러리를 설치
   - [ ] 제스처 이벤트가 발생하면 아래와 같이 캘린더의 형태가 월 캘린더에서 주 캘린더로, 주 캘린더에서 다시 월 캘린더로 변환 가능하도록 구현
 
-![level3](https://github.com/user-attachments/assets/daebe7b3-b86b-4c33-b932-47a052eb26c5)
+  ![level3](https://github.com/user-attachments/assets/daebe7b3-b86b-4c33-b932-47a052eb26c5)

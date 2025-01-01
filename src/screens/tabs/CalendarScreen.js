@@ -1,184 +1,306 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Alert,
+} from "react-native";
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  isToday,
+} from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 const CalendarScreen = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
-  const today = new Date();
+  const [activeTab, setActiveTab] = useState(0); // 현재 활성화된 탭
+
   const weeks = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const getDaysInMonth = (year, month) => {
-    return new Date(year, month + 1, 0).getDate();
-  };
-  const getFirstDayOfMonth = (year, month) => {
-    return new Date(year, month, 1).getDay();
-  };
-  const renderDays = () => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const daysInMonth = getDaysInMonth(year, month);
-    const firstDay = getFirstDayOfMonth(year, month);
-    const daysArray = [];
-    for (let i = 0; i < firstDay; i++) {
-      daysArray.push(null); // 공백 추가
-    }
-    for (let i = 1; i <= daysInMonth; i++) {
-      daysArray.push(i);
-    }
-    return daysArray.map((day, index) => {
-      const isToday =
-        day &&
-        today.getDate() === day &&
-        today.getMonth() === month &&
-        today.getFullYear() === year;
-      const isSelected =
-        selectedDate &&
-        selectedDate.year === year &&
-        selectedDate.month === month &&
-        selectedDate.day === day;
-      return (
-        <TouchableOpacity
-          key={index}
-          style={[
-            styles.dayContainer,
-            isToday && styles.today, // 오늘 날짜 스타일
-            isSelected && styles.selectedDay, // 선택된 날짜 스타일
-          ]}
-          onPress={() => day && setSelectedDate({ year, month, day })}
-        >
-          <Text
-            style={[
-              styles.dayText,
-              isToday && styles.todayText, // 오늘 날짜 텍스트 색상
-              isSelected && styles.selectedDayText, // 선택된 날짜 텍스트 색상
-            ]}
-          >
-            {day || ""}
-          </Text>
-        </TouchableOpacity>
-      );
-    });
-  };
-  const handlePrevMonth = () => {
-    const prevMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() - 1,
-      1
-    );
-    setCurrentDate(prevMonth);
-  };
-  const handleNextMonth = () => {
-    const nextMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
-      1
-    );
-    setCurrentDate(nextMonth);
+
+  const tabs = [
+    {
+      id: 0,
+      title: "식단",
+      count: 0,
+      content: "추가 버튼을 눌러\n식단을 기록해주세요",
+    },
+    {
+      id: 1,
+      title: "운동",
+      count: 0,
+      content: "추가 버튼을 눌러\n운동을 기록해주세요",
+    },
+    {
+      id: 2,
+      title: "신체",
+      count: 0,
+      content: "추가 버튼을 눌러\n신체를 기록해주세요",
+    },
+  ];
+
+  const handleAddButtonPress = () => {
+    Alert.alert("Modal has been closed.");
   };
 
+  // Helper function to generate calendar dates
+  const generateCalendar = (date) => {
+    const start = startOfWeek(startOfMonth(date));
+    const end = endOfWeek(endOfMonth(date));
+    return eachDayOfInterval({ start, end });
+  };
+
+  const dates = generateCalendar(currentDate);
+
+  // Handlers for month navigation
+  const handlePrevMonth = () => setCurrentDate((prev) => subMonths(prev, 1));
+  const handleNextMonth = () => setCurrentDate((prev) => addMonths(prev, 1));
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handlePrevMonth}>
-          <MaterialIcons name="arrow-back-ios" size={24} color="#85c2cc" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>
-          {currentDate.toLocaleString("en-US", { month: "long" })}{" "}
-          {currentDate.getFullYear()}
-        </Text>
-        <TouchableOpacity onPress={handleNextMonth}>
-          <MaterialIcons name="arrow-forward-ios" size={24} color="#85c2cc" />
-        </TouchableOpacity>
-      </View>
-      {/* 요일 */}
-      <View style={styles.daysOfWeek}>
-        {weeks.map((day, index) => (
-          <Text
-            key={index}
-            style={[
-              styles.dayOfWeek,
-              day === "Sun" && styles.sunday, // 일요일 스타일
-              day === "Sat" && styles.saturday, // 토요일 스타일
-            ]}
-          >
-            {day}
+    <>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={handlePrevMonth}>
+            <MaterialIcons
+              style={styles.navButton}
+              name="arrow-back-ios"
+              size={20}
+              color="blue"
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>
+            {format(currentDate, "MMMM yyyy")}
           </Text>
-        ))}
+          <TouchableOpacity onPress={handleNextMonth}>
+            <MaterialIcons
+              style={styles.navButton}
+              name="arrow-forward-ios"
+              size={24}
+              color="blue"
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Weekdays */}
+        <View style={styles.weekdays}>
+          {weeks.map((day, index) => (
+            <Text
+              key={day}
+              style={[
+                styles.weekdayText,
+                index === 0 && styles.sundayText, // Sunday: Red
+                index === 6 && styles.saturdayText, // Saturday: Blue
+              ]}
+            >
+              {day}
+            </Text>
+          ))}
+        </View>
+
+        {/* Dates */}
+        <FlatList
+          data={dates}
+          numColumns={7}
+          keyExtractor={(item) => item.toString()}
+          renderItem={({ item }) => {
+            const isSelected =
+              selectedDate &&
+              format(selectedDate, "yyyy-MM-dd") === format(item, "yyyy-MM-dd");
+            const isCurrentMonth =
+              format(item, "MM") === format(currentDate, "MM");
+            const isTodayDate = isToday(item);
+
+            return (
+              <TouchableOpacity
+                style={[
+                  styles.dateContainer,
+                  isSelected && styles.selectedDate,
+                  isTodayDate && styles.todayDate,
+                  !isCurrentMonth && styles.outsideDate,
+                ]}
+                onPress={() => setSelectedDate(item)}
+              >
+                <Text style={styles.dateText}>{format(item, "d")}</Text>
+              </TouchableOpacity>
+            );
+          }}
+        />
+
+        {/* Tabs */}
+        <View style={styles.tabContainer}>
+          {tabs.map((tab) => (
+            <TouchableOpacity
+              key={tab.id}
+              style={[
+                styles.tabButton,
+                activeTab === tab.id && styles.activeTabButton,
+              ]}
+              onPress={() => setActiveTab(tab.id)}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  activeTab === tab.id && styles.activeTabText,
+                ]}
+              >
+                {tab.title} {tab.count}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Tab Content */}
+        <View style={styles.contentContainer}>
+          <Text style={styles.contentText}>{tabs[activeTab].content}</Text>
+        </View>
       </View>
-      {/* 날짜 */}
-      <View style={styles.daysGrid}>{renderDays()}</View>
-    </View>
+
+      {/* Floating Button */}
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={handleAddButtonPress}
+      >
+        <MaterialIcons name="add" size={30} color="white" />
+      </TouchableOpacity>
+    </>
   );
 };
 
-export default CalendarScreen;
-
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    backgroundColor: "white",
-    alignItems: "center",
-    // justifyContent: 'center',
+    padding: 16,
+    paddingTop: 80,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 40,
+    marginBottom: 30,
+  },
+  navButton: {
+    fontSize: 20,
+    fontWeight: "bold",
     paddingHorizontal: 20,
-    width: "100%",
   },
   headerText: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
   },
-  daysOfWeek: {
+  weekdays: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    marginBottom: 20,
+    justifyContent: "space-around",
+    marginBottom: 8,
   },
-  dayOfWeek: {
+  weekdayText: {
+    fontSize: 14,
+    fontWeight: "bold",
     textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 16,
-    color: "#b0b0b0",
-    width: "14.28%",
+    width: 40,
   },
-  sunday: {
-    color: "red",
+  sundayText: {
+    color: "red", // Sunday: Red
   },
-  saturday: {
-    color: "blue",
+  saturdayText: {
+    color: "blue", // Saturday: Blue
   },
-  daysGrid: {
+  dateContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    // width: 48,
+    flex: 1,
+    height: 48,
+    margin: 2,
+    borderRadius: 24,
+  },
+  dateText: {
+    fontSize: 14,
+    textAlign: "center",
+  },
+  selectedDate: {
+    borderColor: "#2196F3",
+    borderWidth: 3,
+  },
+  todayDate: {
+    borderColor: "#2196F3",
+    borderWidth: 3,
+  },
+  outsideDate: {
+    opacity: 0.4,
+  },
+  tabContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
+    justifyContent: "space-around",
+    alignItems: "center",
+    borderRadius: 10,
+    backgroundColor: "#ececec",
+    // borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+    marginHorizontal: 25,
+    marginVertical: 15,
+    padding: 7,
   },
-  dayContainer: {
-    width: "14.28%", // 7일의 비율로 설정
-    aspectRatio: 1, // 정사각형 비율 유지
+  tabButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  activeTabButton: {
+    backgroundColor: "#ffffff",
+    borderRadius: 10,
+    padding: 20,
+  },
+  tabText: {
+    fontSize: 14,
+    color: "#666",
+    textAlign: "center",
+  },
+  activeTabText: {
+    color: "#1E88E5",
+    fontWeight: "bold",
+  },
+  contentContainer: {
     justifyContent: "center",
     alignItems: "center",
+    padding: 20,
+    height: 260,
+    backgroundColor: "#F5F5F5",
   },
-  today: {
-    borderColor: "#007AFF",
-    borderWidth: 2,
-    borderRadius: 50, // 정사각형의 반으로 설정
-  },
-  todayText: {
-    color: "black",
-  },
-  selectedDay: {
-    backgroundColor: "#007AFF",
-    borderRadius: 50, // 정사각형의 반으로 설정
-  },
-  selectedDayText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  dayText: {
+  contentText: {
     fontSize: 16,
-    color: "black",
+    flex: 1,
+    textAlign: "center",
+    color: "#c8c8c8",
+    lineHeight: 24,
+  },
+  floatingButton: {
+    position: "absolute",
+    bottom: 30,
+    right: 30,
+    backgroundColor: "#2196F3",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
 });
+
+export default CalendarScreen;
